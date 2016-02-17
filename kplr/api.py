@@ -1005,6 +1005,9 @@ def K2SFF(EPIC, version = 1, clobber = False):
     
     star = API().k2_star(EPIC)
     base_dir = os.path.join(KPLR_ROOT, "data", "k2sff", str(EPIC))
+    
+    import pdb; pdb.set_trace()
+    
     filename = "hlsp_k2sff_k2_lightcurve_%09d-c%02d_kepler_v%d_llc.fits" % \
                (EPIC, star.sci_campaign, version)
     
