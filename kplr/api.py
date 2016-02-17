@@ -998,18 +998,21 @@ class K2TargetPixelFile(TargetPixelFile):
                                int(int(int(self.kepid[-5:][-5:])*1e-3)*1e3),
                                self._filename)
 
-def K2SFF(EPIC, version = 1, clobber = False):
+def K2SFF(EPIC, version = 1, clobber = False, sci_campaign = None):
     '''
     
     '''
     
-    star = API().k2_star(EPIC)
+    if sci_campaign is None:
+      client = API()
+      star = client.k2_star(EPIC)
+      tpf = star.get_target_pixel_files(clobber = clobber)
+      sci_campaign = tpf[0].sci_campaign
+      
     base_dir = os.path.join(KPLR_ROOT, "data", "k2sff", str(EPIC))
-    
-    import pdb; pdb.set_trace()
-    
+
     filename = "hlsp_k2sff_k2_lightcurve_%09d-c%02d_kepler_v%d_llc.fits" % \
-               (EPIC, star.sci_campaign, version)
+               (EPIC, sci_campaign, version)
     
     # Download the data
     if clobber or not os.path.exists(os.path.join(base_dir, filename)):
@@ -1018,7 +1021,7 @@ def K2SFF(EPIC, version = 1, clobber = False):
         first_four = int(str(EPIC)[:4])
         last_five = int(str(EPIC)[-5:])
         url = "http://archive.stsci.edu/missions/hlsp/k2sff/"
-        url += "c%02d/%04d00000/%05d" % (star.sci_campaign, first_four, last_five)
+        url += "c%02d/%04d00000/%05d" % (sci_campaign, first_four, last_five)
         url += filename
         
         # Query the server
