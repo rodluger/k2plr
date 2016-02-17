@@ -987,15 +987,55 @@ class K2TargetPixelFile(TargetPixelFile):
         The remote URL for the data file on the MAST servers.
 
         """
-        if self.sci_campaign != 0:
-            raise NotImplementedError("Only campaign 0 is supported for now")
         base_url = "http://archive.stsci.edu/pub/k2/"
         if self.ktc_k2_id < 201000000:
-            base_url += "{0}/c0/200000000/{1:05d}/{2}"
+            base_url += "{0}/c%d/200000000/{1:05d}/{2}" % self.sci_campaign
         else:
-            base_url += "{{0}}/c0/{0}/{{1:05d}}/{{2}}" \
+            base_url += ("{{0}}/c%d/{0}/{{1:05d}}/{{2}}" % self.sci_campaign) \
                 .format(int(int(self.ktc_k2_id * 1e-5) * 1e5))
 
         return base_url.format(self.product,
                                int(int(int(self.kepid[-5:][-5:])*1e-3)*1e3),
                                self._filename)
+
+def K2SFF(EPIC, version = 1, clobber = False):
+    '''
+    
+    '''
+    
+    star = API().k2_star(EPIC)
+    base_dir = os.path.join(KPLR_ROOT, "data", "k2sff", str(EPIC))
+    filename = "hlsp_k2sff_k2_lightcurve_%09d-c%02d_kepler_v%d_llc.fits" % \
+               (EPIC, star.sci_campaign, version)
+    
+    # Download the data
+    if clobber or not os.path.exists(os.path.join(base_dir, filename)):
+        
+        # Get the url
+        first_four = int(str(EPIC)[:4])
+        last_five = int(str(EPIC)[-5:])
+        url = "http://archive.stsci.edu/missions/hlsp/k2sff/"
+        url += "c%02d/%04d00000/%05d" % (star.sci_campaign, first_four, last_five)
+        url += filename
+        
+        # Query the server
+        r = urllib.request.Request(url)
+        handler = urllib.request.urlopen(r)
+        code = handler.getcode()
+        if int(code) != 200:
+            raise APIError(code, url, "")
+        data = handler.read()
+        
+        # Make sure that the root directory exists.
+        try:
+            os.makedirs(base_dir)
+        except os.error:
+            pass
+
+        # Atomically write to disk.
+        f = NamedTemporaryFile("wb", delete=False)
+        f.write(data)
+        f.flush()
+        os.fsync(f.fileno())
+        f.close()
+        shutil.move(f.name, os.path.join(base_dir, filename))
