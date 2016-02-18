@@ -1052,7 +1052,7 @@ def K2SFF(EPIC, version = 1, clobber = False, sci_campaign = None):
     res = k2sff() 
     with pyfits.open(os.path.join(base_dir, filename)) as f:  
         res.time = f[1].data['T']
-        res.fcorr = f[1].data['FCORR']
+        res.fcor = f[1].data['FCOR']
         res.apertures = np.vstack([f[22].data, f[23].data])
     
     return res
