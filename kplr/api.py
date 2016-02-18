@@ -1017,33 +1017,33 @@ def K2SFF(EPIC, version = 1, clobber = False, sci_campaign = None):
     # Download the data
     if clobber or not os.path.exists(os.path.join(base_dir, filename)):
         
-        # Get the url
-        first_four = int(str(EPIC)[:4])
-        last_five = int(str(EPIC)[-5:])
-        url = "http://archive.stsci.edu/missions/hlsp/k2sff/"
-        url += "c%02d/%04d00000/%05d" % (sci_campaign, first_four, last_five)
-        url += filename
-        
-        print(url) # DEBUG
-        
-        # Query the server
-        r = urllib.request.Request(url)
-        handler = urllib.request.urlopen(r)
-        code = handler.getcode()
-        if int(code) != 200:
-            raise APIError(code, url, "")
-        data = handler.read()
-        
-        # Make sure that the root directory exists.
-        try:
-            os.makedirs(base_dir)
-        except os.error:
-            pass
+      # Get the url
+      first_four = int(str(EPIC)[:4])
+      last_five = int(str(EPIC)[-5:])
+      url = "http://archive.stsci.edu/missions/hlsp/k2sff/"
+      url += "c%02d/%04d00000/%05d/" % (sci_campaign, first_four, last_five)
+      url += filename
 
-        # Atomically write to disk.
-        f = NamedTemporaryFile("wb", delete=False)
-        f.write(data)
-        f.flush()
-        os.fsync(f.fileno())
-        f.close()
-        shutil.move(f.name, os.path.join(base_dir, filename))
+      # Query the server
+      r = urllib.request.Request(url)
+      handler = urllib.request.urlopen(r)
+      code = handler.getcode()
+      if int(code) != 200:
+          raise APIError(code, url, "")
+      data = handler.read()
+      
+      # Make sure that the root directory exists.
+      try:
+          os.makedirs(base_dir)
+      except os.error:
+          pass
+
+      # Atomically write to disk.
+      f = NamedTemporaryFile("wb", delete=False)
+      f.write(data)
+      f.flush()
+      os.fsync(f.fileno())
+      f.close()
+      shutil.move(f.name, os.path.join(base_dir, filename))
+    
+    import pdb; pdb.set_trace()
