@@ -1045,5 +1045,48 @@ def K2SFF(EPIC, version = 1, clobber = False, sci_campaign = None):
       os.fsync(f.fileno())
       f.close()
       shutil.move(f.name, os.path.join(base_dir, filename))
-    
-    import pdb; pdb.set_trace()
+  
+  # Now open the fits file  
+  with pyfits.open(os.path.join(base_dir, filename)) as f:  
+    aperture = f[2].data
+    qdata = f[1].data
+  
+  import pdb; pdb.set_trace()
+  
+  # Get the arrays
+  time = np.array(qdata.field('TIME'), dtype='float64')
+  cadn = np.array(qdata.field('CADENCENO'), dtype='int32')
+  fpix = np.array(qdata.field('FLUX'), dtype='float64')
+  fpix_opt = np.array([f[np.where(aperture & 2)] for f in fpix], dtype='float64')
+  rawc = np.array(qdata.field('RAW_CNTS'), dtype='int32')
+  fpixerr = np.array(qdata.field('FLUX_ERR'), dtype='float64')
+  qual = np.array(qdata.field('QUALITY'), dtype=int)
+  colmotion = np.array(qdata.field('POS_CORR1'), dtype='float64')
+  rowmotion = np.array(qdata.field('POS_CORR2'), dtype='float64')
+
+  # Get bad indices
+  t_nan_inds = list(np.where(np.isnan(time))[0]) 
+  f_nan_inds = list(np.where(np.isnan(np.sum(fpix_opt, axis = 1)))[0])                           
+  
+  qual_inds = []
+  for b in [1,2,3,4,5,6,7,8,9,11,12,13,14,15,16,17]:
+    qual_inds += list(np.where(qual & 2 ** (b - 1))[0])
+  bad_inds = np.array(sorted(list(set(qual_inds + t_nan_inds))))
+
+  # Remove them
+  time = np.delete(time, bad_inds)
+  cadn = np.delete(cadn, bad_inds)
+  fpix = np.delete(fpix, bad_inds, 0)
+  rawc = np.delete(rawc, bad_inds, 0)
+  fpixerr = np.delete(fpixerr, bad_inds, 0)
+  colmotion = np.delete(colmotion, bad_inds)
+  rowmotion = np.delete(rowmotion, bad_inds)
+  
+  # Finally, select the optimal aperture and flatten the arrays
+  apidx = np.where(aperture & 1)
+  fpix = np.array([f[apidx] for f in fpix], dtype='float64')
+  fpixerr = np.array([f[apidx] for f in fpixerr], dtype='float64')
+  grid = np.array([(x,y) for x,y in zip(apidx[0] - min(apidx[0]), apidx[1] - min(apidx[1]))])
+
+  return {'time': time, 'cadn': cadn, 'fpix': fpix, 'fpixerr': fpixerr, 'fnum': 0, 'EPIC': EPIC,
+          'KIC': 0, 'colmotion': colmotion, 'rowmotion': rowmotion, 'grid': grid}
