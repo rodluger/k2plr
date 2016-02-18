@@ -49,7 +49,8 @@ class Adapter(object):
                 final[shortname] = None
 
         for k in row:
-            logging.warn("Unrecognized parameter: '{0}'".format(k))
+            if k not in ['stpropflag', 'Data Availability', 'High-Level Science Products']:
+                logging.warn("Unrecognized parameter: '{0}'".format(k))
 
         return final
 
