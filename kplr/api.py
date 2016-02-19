@@ -1005,6 +1005,14 @@ def K2SFF(EPIC, version = 1, clobber = False, sci_campaign = None):
     
     '''
     
+    # Get the campaign number 
+    # TODO: Allow this offline     
+    if sci_campaign is None:
+        client = API()
+        star = client.k2_star(EPIC)
+        tpf = star.get_target_pixel_files(clobber = clobber)
+        sci_campaign = tpf[0].sci_campaign
+    
     # Local copy  
     base_dir = os.path.join(KPLR_ROOT, "data", "k2sff", str(EPIC))
     filename = "hlsp_k2sff_k2_lightcurve_%09d-c%02d_kepler_v%d_llc.fits" % \
@@ -1012,13 +1020,6 @@ def K2SFF(EPIC, version = 1, clobber = False, sci_campaign = None):
     
     # Download the data
     if clobber or not os.path.exists(os.path.join(base_dir, filename)):
-      
-      # Get the campaign number      
-      if sci_campaign is None:
-          client = API()
-          star = client.k2_star(EPIC)
-          tpf = star.get_target_pixel_files(clobber = clobber)
-          sci_campaign = tpf[0].sci_campaign
         
       # Get the url
       first_four = int(str(EPIC)[:4])
