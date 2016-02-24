@@ -1033,6 +1033,8 @@ def K2SFF(EPIC, version = 1, clobber = False, sci_campaign = None):
         star = client.k2_star(EPIC)
         tpf = star.get_target_pixel_files(clobber = clobber)
         sci_campaign = tpf[0].sci_campaign
+        filename = "hlsp_k2sff_k2_lightcurve_%09d-c%02d_kepler_v%d_llc.fits" % \
+                   (EPIC, sci_campaign, version)
       
       # Get the url
       first_four = int(str(EPIC)[:4])
