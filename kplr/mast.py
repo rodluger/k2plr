@@ -8,7 +8,7 @@ from __future__ import (division, print_function, absolute_import,
                         unicode_literals)
 
 __all__ = ["koi_adapter", "planet_adapter", "star_adapter", "dataset_adapter",
-           "epic_adapter"]
+           "epic_adapter", "mini_epic_adapter"]
 
 import logging
 
@@ -33,11 +33,12 @@ class Adapter(object):
 
     """
 
-    def __init__(self, parameters):
+    def __init__(self, parameters, add_ang_sep = True):
         self._parameters = parameters
 
-        # Add some general purpose parameters.
-        self._parameters["Ang Sep (')"] = ("angular_separation", float)
+        if add_ang_sep:
+          # Add some general purpose parameters.
+          self._parameters["Ang Sep (')"] = ("angular_separation", float)
 
     def __call__(self, row):
         row = dict(row)
@@ -491,3 +492,7 @@ k2_dataset_adapter = Adapter({
     "Nearest Neighbor": ("prox", float),
     "Nomad ID": ("nomad", six.text_type),
 })
+
+mini_epic_adapter = Adapter({
+    "EPIC": ("id", int),
+}, add_ang_sep = False)

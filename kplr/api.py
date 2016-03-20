@@ -166,8 +166,9 @@ class API(object):
         params["action"] = params.get("action", "Search")
         params["outputformat"] = "JSON"
         params["coordformat"] = "dec"
-        params["verb"] = 3
-
+        if params.get("selectedColumnsCsv", None) is not None:
+          params["verb"] = 3
+        
         # Deal with sort order.
         if sort is not None:
             if isinstance(sort, six.string_types):
@@ -337,6 +338,19 @@ class API(object):
         stars = self.mast_request("epic", adapter=mast.epic_adapter,
                                   mission="k2", **params)
         return [K2Star(self, s) for s in stars]
+
+    def k2_star_list(self, **params):
+        """
+        Return a list of all the EPIC target IDs for which data was collected.
+        
+        """
+        params["selectedColumnsCsv"] = "id"
+        params["ordercolumn1"] = "id"
+        params["max_records"] = params.pop("max_records", 999999)
+        params["k2_avail_flag"] = "1"
+        stars = self.mast_request("epic", adapter=mast.mini_epic_adapter,
+                                  mission="k2", **params)
+        return [star["id"] for star in stars]
 
     def k2_star(self, id_):
         """
