@@ -495,4 +495,5 @@ k2_dataset_adapter = Adapter({
 
 mini_epic_adapter = Adapter({
     "EPIC": ("id", int),
+    "KEP Mag": ("kp", float),
 }, add_ang_sep = False)

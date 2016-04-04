@@ -13,6 +13,7 @@ import logging
 from itertools import product
 from functools import partial
 from tempfile import NamedTemporaryFile
+import random
 
 import six
 from six.moves import urllib
@@ -351,6 +352,25 @@ class API(object):
         stars = self.mast_request("epic", adapter=mast.mini_epic_adapter,
                                   mission="k2", **params)
         return [star["id"] for star in stars]
+
+    def k2_star_mags(self, stars_per_mag = 50, mags = range(8,18), **params):
+        """
+        Returns the EPIC numbers of ``stars_per_mag`` random stars in each 
+        Kepler magnitude bin in the range ``mags``.
+        
+        """
+        params["selectedColumnsCsv"] = "id"
+        params["ordercolumn1"] = "id"
+        params["max_records"] = params.pop("max_records", 999999)
+        params["k2_avail_flag"] = "1"
+        targets = []
+        for kp in mags:
+          params["kp"] = "%d..%d" % (kp, kp + 1)
+          stars = self.mast_request("epic", adapter=mast.mini_epic_adapter,
+                                  mission="k2", **params)
+          random.shuffle(stars)
+          targets.append([star["id"] for star in stars[:stars_per_mag]])
+        return targets
 
     def k2_star(self, id_):
         """
