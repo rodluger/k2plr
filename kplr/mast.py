@@ -497,3 +497,7 @@ mini_epic_adapter = Adapter({
     "EPIC": ("id", int),
     "KEP Mag": ("kp", float),
 }, add_ang_sep = False)
+
+mini_kic_adapter = Adapter({
+    "Kepler ID": ("ktc_kepler_id", int)
+}, add_ang_sep = False)

@@ -326,6 +326,22 @@ class API(object):
                              .format(kepid))
         return stars[0]
 
+    def kepler_star_list(self, quarter = 8, **params):
+        """
+        Return a list of all the KIC target IDs for which data was collected
+        in a given quarter.
+        
+        """
+
+        params["selectedColumnsCsv"] = "ktc_kepler_id"
+        params["ordercolumn1"] = "ktc_kepler_id"
+        params["ktc_target_type"] = "LC"
+        params["sci_data_quarter"] = str(quarter)
+        params["max_records"] = params.pop("max_records", 999999)
+        stars = self.mast_request("data_search", adapter=mast.mini_kic_adapter,
+                                  mission="kepler", **params)
+        return [star["ktc_kepler_id"] for star in stars]
+        
     def k2_stars(self, **params):
         """
         Get a list of EPIC targets from MAST. Only return up to 100 results by
