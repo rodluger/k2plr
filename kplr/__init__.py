@@ -14,5 +14,5 @@ if not __KPLR_SETUP__:
                "LightCurve", "TargetPixelFile", "ld", "huber"]
 
     from .kplr import KBJD_ZERO, EXPOSURE_TIMES
-    from .api import API, KOI, Planet, Star, LightCurve, TargetPixelFile, K2SFF, K2VARCAT
+    from .api import API, KOI, Planet, Star, LightCurve, TargetPixelFile, K2SFF, K2VARCAT, K2SC
     from . import ld, huber
