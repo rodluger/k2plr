@@ -1123,3 +1123,79 @@ def K2SFF(EPIC, version = 1, clobber = False, sci_campaign = None):
         res.apertures = np.array(np.vstack([f[22].data, f[23].data]), dtype = int)
     
     return res
+
+class k2varcat(object): 
+    pass
+
+def K2VARCAT(EPIC, version = 2, clobber = False, sci_campaign = None):
+    '''
+    
+    '''
+    
+    # Local directory 
+    base_dir = os.path.join(KPLR_ROOT, "data", "k2varcat", str(EPIC))
+    
+    # Check for local copies
+    file_exists = False
+    if sci_campaign is None:
+        for c in range(30):
+            filename = "hlsp_k2varcat_k2_lightcurve_%09d-c%02d_kepler_v%d_llc.fits" % \
+                       (EPIC, c, version)
+            if os.path.exists(os.path.join(base_dir, filename)):
+                sci_campaign = c
+                file_exists = True
+                break
+    else:
+        filename = "hlsp_k2varcat_k2_lightcurve_%09d-c%02d_kepler_v%d_llc.fits" % \
+                   (EPIC, sci_campaign, version)
+        if os.path.exists(os.path.join(base_dir, filename)):
+            file_exists = True
+    
+    # Download the data
+    if clobber or not file_exists:
+      
+      # Get the campaign number
+      if sci_campaign is None:
+        client = API()
+        star = client.k2_star(EPIC)
+        tpf = star.get_target_pixel_files(clobber = clobber)
+        sci_campaign = tpf[0].sci_campaign
+        filename = "hlsp_k2varcat_k2_lightcurve_%09d-c%02d_kepler_v%d_llc.fits" % \
+                   (EPIC, sci_campaign, version)
+      
+      # Get the url
+      first_four = int(str(EPIC)[:4])
+      next_two = int(str(EPIC)[-5:-3] + '000')
+      url = "https://archive.stsci.edu/missions/hlsp/k2varcat/"
+      url += "c%02d/%04d00000/%05d/" % (sci_campaign, first_four, next_two)
+      url += filename
+
+      # Query the server
+      r = urllib.request.Request(url)
+      handler = urllib.request.urlopen(r)
+      code = handler.getcode()
+      if int(code) != 200:
+          raise APIError(code, url, "")
+      data = handler.read()
+      
+      # Make sure that the root directory exists.
+      try:
+          os.makedirs(base_dir)
+      except os.error:
+          pass
+
+      # Atomically write to disk.
+      f = NamedTemporaryFile("wb", delete=False)
+      f.write(data)
+      f.flush()
+      os.fsync(f.fileno())
+      f.close()
+      shutil.move(f.name, os.path.join(base_dir, filename))
+  
+    # Now open the fits file 
+    res = k2varcat() 
+    with pyfits.open(os.path.join(base_dir, filename)) as f:  
+        res.time = f[1].data['TIME']
+        res.flux = f[1].data['DETFLUX']
+    
+    return res
