@@ -1194,6 +1194,7 @@ def K2VARCAT(EPIC, version = 2, clobber = False, sci_campaign = None):
   
     # Now open the fits file 
     res = k2varcat() 
+    res._file = os.path.join(base_dir, filename)
     with pyfits.open(os.path.join(base_dir, filename)) as f:  
         res.time = f[1].data['TIME']
         res.flux = f[1].data['DETFLUX']
