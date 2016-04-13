@@ -1274,7 +1274,9 @@ def K2SC(EPIC, version = 1, clobber = False, sci_campaign = None):
     res._file = os.path.join(base_dir, filename)
     with pyfits.open(os.path.join(base_dir, filename)) as f:  
         res.time = f[1].data['TIME']
-        res.pdcflux = f[1].data['FLUX']
-        res.sapflux = f[2].data['FLUX']
+        
+        # Get the data minus the instrumental trends only
+        res.pdcflux = f[1].data['FLUX'] + f[1].data['TREND_T'] - np.median(f[1].data['TREND_T'])
+        res.sapflux = f[2].data['FLUX'] + f[2].data['TREND_T'] - np.median(f[2].data['TREND_T'])
         
     return res
