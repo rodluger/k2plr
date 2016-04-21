@@ -501,3 +501,8 @@ mini_epic_adapter = Adapter({
 mini_kic_adapter = Adapter({
     "Kepler ID": ("ktc_kepler_id", int)
 }, add_ang_sep = False)
+
+mini_dataset_adapter = Adapter({
+    "K2 ID": ("ktc_k2_id", int),
+    "Campaign": ("sci_campaign", int)
+}, add_ang_sep = False)
