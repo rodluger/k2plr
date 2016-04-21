@@ -366,6 +366,7 @@ class API(object):
         
         params["selectedColumnsCsv"] = "ktc_k2_id,sci_campaign"
         params["ktc_target_type"] = "LC"
+        params["objtype"] = "star,\null"
         params["max_records"] = params.pop("max_records", 999999)
         stars = self.mast_request("data_search", adapter=mast.mini_dataset_adapter,
                                   mission="k2", **params)
