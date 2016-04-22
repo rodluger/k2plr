@@ -362,14 +362,20 @@ class API(object):
         for which LC data was collected, indexed by campaign,
         and randomly shuffled.
         
-        """
+        Returns objects that are listed as either "star" or "\null".
         
+        """
+
         params["selectedColumnsCsv"] = "ktc_k2_id,sci_campaign"
         params["ktc_target_type"] = "LC"
-        params["objtype"] = "\null,star"
         params["max_records"] = params.pop("max_records", 999999)
+        params["objtype"] = "\\null"
+        nulls = self.mast_request("data_search", adapter=mast.mini_dataset_adapter,
+                                  mission="k2", **params)
+        params["objtype"] = "star"
         stars = self.mast_request("data_search", adapter=mast.mini_dataset_adapter,
                                   mission="k2", **params)
+        stars = stars + nulls
         random.shuffle(stars)
         
         # Sort them into campaigns
