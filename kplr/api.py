@@ -1139,6 +1139,7 @@ def K2SFF(EPIC, version = 1, clobber = False, sci_campaign = None):
   
     # Now open the fits file 
     res = k2sff() 
+    res._file = os.path.join(base_dir, filename)
     with pyfits.open(os.path.join(base_dir, filename)) as f:  
         res.time = f[1].data['T']
         res.fcor = f[1].data['FCOR']
