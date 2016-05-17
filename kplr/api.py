@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+'''
+:py:mod:`api.py` - The kplr API
+-------------------------------
+
+This :py:mod:`kplr` package was forked from `<https://github.com/dfm/kplr>`_ and
+modified to allow easy access to different `K2` databases.
+Read the original documentation `here <http://dan.iel.fm/kplr/>`_.
+
+'''
 
 from __future__ import (division, print_function, absolute_import,
                         unicode_literals)
@@ -111,7 +120,7 @@ class API(object):
         :param table:
             The table that you want to search.
 
-        :param **params:
+        :param params:
             Any other search parameters.
 
         """
@@ -160,7 +169,7 @@ class API(object):
         :param category:
             The table that you want to search.
 
-        :param **params:
+        :param params:
             Any other search parameters.
 
         """
@@ -242,7 +251,7 @@ class API(object):
         """
         Get a list of KOIs from The Exoplanet Archive.
 
-        :param **params:
+        :param params:
             The search parameters for the Exoplanet Archive API.
 
         """
@@ -269,7 +278,7 @@ class API(object):
         """
         Get a list of confirmed (Kepler) planets from MAST.
 
-        :param **params:
+        :param params:
             The search parameters for the MAST API.
 
         """
@@ -303,7 +312,7 @@ class API(object):
         Get a list of KIC targets from MAST. Only return up to 100 results by
         default.
 
-        :param **params:
+        :param params:
             The query parameters for the MAST API.
 
         """
@@ -347,7 +356,7 @@ class API(object):
         Get a list of EPIC targets from MAST. Only return up to 100 results by
         default.
 
-        :param **params:
+        :param params:
             The query parameters for the MAST API.
 
         """
@@ -362,7 +371,7 @@ class API(object):
         for which LC data was collected, indexed by campaign,
         and randomly shuffled.
         
-        Returns objects that are listed as either "star" or "\null".
+        Returns objects that are listed as either "star" or "\\null".
         
         """
 
@@ -437,7 +446,7 @@ class API(object):
             A boolean flag that determines whether or not the short cadence
             data should be included.
 
-        :param ** params:
+        :param params:
             Any other search parameters.
 
         """
@@ -473,7 +482,7 @@ class API(object):
         :param async:
             If ``True``, download the files asynchronously using Tornado.
 
-        :param ** params:
+        :param params:
             Other search parameters to be passed to the MAST data search.
 
         """
@@ -510,7 +519,7 @@ class API(object):
         :param async:
             If ``True``, download the files asynchronously using Tornado.
 
-        :param ** params:
+        :param params:
             Other search parameters to be passed to the MAST data search.
 
         """
@@ -788,7 +797,7 @@ class _datafile(Model):
             Overwrite the local file even if it exists? This can be helpful if
             the file gets corrupted somehow.
 
-        :param **kwargs:
+        :param kwargs:
             Any keyword arguments that you would like to pass to the
             :func:`pyfits.open` function.
 
@@ -808,7 +817,7 @@ class _datafile(Model):
             Overwrite the local file even if it exists? This can be helpful if
             the file gets corrupted somehow.
 
-        :param **kwargs:
+        :param kwargs:
             Any keyword arguments that you would like to pass to the
             :func:`fitsio.read` function.
 
