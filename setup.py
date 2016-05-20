@@ -22,14 +22,14 @@ if sys.version_info[0] < 3:
 else:
     import builtins
 builtins.__KPLR_SETUP__ = True
-import kplrk2
+import k2plr
 
 setup(
-    name="kplrk2",
-    version=kplrk2.__version__,
+    name="k2plr",
+    version=k2plr.__version__,
     author="Daniel Foreman-Mackey",
     author_email="danfm@nyu.edu",
-    packages=["kplr"],
+    packages=["k2plr"],
     url="https://github.com/dfm/kplr",
     license="MIT",
     description="Tools for working with Kepler data in Python",

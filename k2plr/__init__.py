@@ -13,6 +13,6 @@ if not __KPLR_SETUP__:
     __all__ = ["KBJD_ZERO", "EXPOSURE_TIMES", "API", "KOI", "Planet", "Star",
                "LightCurve", "TargetPixelFile", "ld", "huber"]
 
-    from .kplrk2 import KBJD_ZERO, EXPOSURE_TIMES
+    from .kplr import KBJD_ZERO, EXPOSURE_TIMES
     from .api import API, KOI, Planet, Star, LightCurve, TargetPixelFile, K2SFF, K2VARCAT, K2SC
     from . import ld, huber
