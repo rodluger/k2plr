@@ -27,10 +27,10 @@ import k2plr
 setup(
     name="k2plr",
     version=k2plr.__version__,
-    author="Daniel Foreman-Mackey",
-    author_email="danfm@nyu.edu",
+    author="Daniel Foreman-Mackey (forked by Rodrigo Luger)",
+    author_email="rodluger@uw.edu",
     packages=["k2plr"],
-    url="https://github.com/dfm/kplr",
+    url="https://github.com/rodluger/k2plr",
     license="MIT",
     description="Tools for working with Kepler data in Python",
     long_description=open("README.rst").read(),
