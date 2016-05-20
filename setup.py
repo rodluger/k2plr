@@ -22,11 +22,11 @@ if sys.version_info[0] < 3:
 else:
     import builtins
 builtins.__KPLR_SETUP__ = True
-import kplr
+import kplrk2
 
 setup(
-    name="kplr",
-    version=kplr.__version__,
+    name="kplrk2",
+    version=kplrk2.__version__,
     author="Daniel Foreman-Mackey",
     author_email="danfm@nyu.edu",
     packages=["kplr"],
