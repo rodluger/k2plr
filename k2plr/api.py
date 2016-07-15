@@ -400,6 +400,41 @@ class API(object):
 
         return res
 
+    def k2_star_info(self, **params):
+        """
+        Return a dict of all the EPIC target IDs, kepmags, and channel numbers
+        for which LC data was collected, indexed by campaign,
+        and randomly shuffled.
+        
+        Returns objects that are listed as either "star" or "\\null".
+        
+        """
+
+        params["selectedColumnsCsv"] = "ktc_k2_id,sci_campaign,kp,sci_channel"
+        params["ktc_target_type"] = "LC"
+        params["max_records"] = params.pop("max_records", 999999)
+        params["objtype"] = "\\null"
+        nulls = self.mast_request("data_search", adapter=mast.mini_dataset_adapter,
+                                  mission="k2", **params)
+        params["objtype"] = "star"
+        stars = self.mast_request("data_search", adapter=mast.mini_dataset_adapter,
+                                  mission="k2", **params)
+        stars = stars + nulls
+        random.shuffle(stars)
+        
+        # Sort them into campaigns
+        c = [[] for i in range(99)]
+        for star in stars:
+          c[star["sci_campaign"]].append([star["ktc_k2_id"], star["kp"], star["sci_channel"]])
+        
+        # Create a dict
+        res = {}
+        for campaign in range(99):
+          if len(c[campaign]):
+            res.update({campaign: c[campaign]})
+
+        return res
+
     def k2_star_mags(self, stars_per_mag = 50, mags = range(8,18), **params):
         """
         Returns the EPIC numbers of ``stars_per_mag`` random stars in each 
