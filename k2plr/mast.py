@@ -504,5 +504,7 @@ mini_kic_adapter = Adapter({
 
 mini_dataset_adapter = Adapter({
     "K2 ID": ("ktc_k2_id", int),
-    "Campaign": ("sci_campaign", int)
+    "Campaign": ("sci_campaign", int),
+    "KEP Mag": ("kp", float),
+    "Channel": ("sci_channel", int)
 }, add_ang_sep = False)
