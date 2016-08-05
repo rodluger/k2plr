@@ -50,7 +50,8 @@ class Adapter(object):
                 final[shortname] = None
 
         for k in row:
-            if k not in ['stpropflag', 'Data Availability', 'High-Level Science Products']:
+            if k not in ['stpropflag', 'Data Availability', 'High-Level Science Products',
+                         'Channel', 'KEP Mag']:
                 logging.warn("Unrecognized parameter: '{0}'".format(k))
 
         return final
