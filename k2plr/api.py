@@ -365,10 +365,10 @@ class API(object):
                                   mission="k2", **params)
         return [K2Star(self, s) for s in stars]
 
-    def k2_star_list(self, **params):
+    def k2_star_list(self, long_cadence = True, **params):
         """
         Return a dict of all the EPIC target IDs
-        for which LC data was collected, indexed by campaign,
+        for which LC or SC data was collected, indexed by campaign,
         and randomly shuffled.
         
         Returns objects that are listed as either "star" or "\\null".
@@ -376,7 +376,10 @@ class API(object):
         """
 
         params["selectedColumnsCsv"] = "ktc_k2_id,sci_campaign"
-        params["ktc_target_type"] = "LC"
+        if long_cadence:
+          params["ktc_target_type"] = "LC"
+        else:
+          params["ktc_target_type"] = "SC"
         params["max_records"] = params.pop("max_records", 999999)
         params["objtype"] = "\\null"
         nulls = self.mast_request("data_search", adapter=mast.mini_dataset_adapter,
@@ -400,10 +403,10 @@ class API(object):
 
         return res
 
-    def k2_star_info(self, **params):
+    def k2_star_info(self, long_cadence = True, **params):
         """
         Return a dict of all the EPIC target IDs, kepmags, and channel numbers
-        for which LC data was collected, indexed by campaign,
+        for which LC or SC data was collected, indexed by campaign,
         and randomly shuffled.
         
         Returns objects that are listed as either "star" or "\\null".
@@ -411,7 +414,10 @@ class API(object):
         """
 
         params["selectedColumnsCsv"] = "ktc_k2_id,sci_campaign,kp,sci_channel"
-        params["ktc_target_type"] = "LC"
+        if long_cadence:
+          params["ktc_target_type"] = "LC"
+        else:
+          params["ktc_target_type"] = "SC"
         params["max_records"] = params.pop("max_records", 999999)
         params["objtype"] = "\\null"
         nulls = self.mast_request("data_search", adapter=mast.mini_dataset_adapter,
@@ -421,7 +427,7 @@ class API(object):
                                   mission="k2", **params)
         stars = stars + nulls
         random.shuffle(stars)
-        
+
         # Sort them into campaigns
         c = [[] for i in range(99)]
         for star in stars:
