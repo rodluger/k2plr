@@ -403,21 +403,19 @@ class API(object):
 
         return res
 
-    def k2_star_info(self, long_cadence = True, **params):
+    def k2_star_info(self, **params):
         """
         Return a dict of all the EPIC target IDs, kepmags, and channel numbers
-        for which LC or SC data was collected, indexed by campaign,
+        for which LC/SC data was collected, indexed by campaign,
         and randomly shuffled.
         
         Returns objects that are listed as either "star" or "\\null".
         
         """
-
+        
+        # Get all the long cadence targets
         params["selectedColumnsCsv"] = "ktc_k2_id,sci_campaign,kp,sci_channel"
-        if long_cadence:
-          params["ktc_target_type"] = "LC"
-        else:
-          params["ktc_target_type"] = "SC"
+        params["ktc_target_type"] = "LC"
         params["max_records"] = params.pop("max_records", 999999)
         params["objtype"] = "\\null"
         nulls = self.mast_request("data_search", adapter=mast.mini_dataset_adapter,
@@ -428,10 +426,22 @@ class API(object):
         stars = stars + nulls
         random.shuffle(stars)
 
+        # Now get the short cadence ones and cross-match them
+        params["selectedColumnsCsv"] = "ktc_k2_id"
+        params["ktc_target_type"] = "SC"
+        params["max_records"] = params.pop("max_records", 999999)
+        params["objtype"] = "\\null"
+        scnulls = self.mast_request("data_search", adapter=mast.mini_dataset_adapter,
+                                    mission="k2", **params)
+        params["objtype"] = "star"
+        scstars = self.mast_request("data_search", adapter=mast.mini_dataset_adapter,
+                                    mission="k2", **params)
+        scstars = [star['ktc_k2_id'] for star in scstars + scnulls]
+
         # Sort them into campaigns
         c = [[] for i in range(99)]
         for star in stars:
-          c[star["sci_campaign"]].append([star["ktc_k2_id"], star["kp"], star["sci_channel"]])
+          c[star["sci_campaign"]].append([star["ktc_k2_id"], star["kp"], star["sci_channel"], star["ktc_k2_id"] in scstars])
         
         # Create a dict
         res = {}
