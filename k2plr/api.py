@@ -1409,9 +1409,7 @@ def EVEREST(EPIC, version = 1, clobber = False, sci_campaign = None):
       url = "https://archive.stsci.edu/missions/hlsp/everest/"
       url += "c%02d/%04d00000/%05d/" % (sci_campaign, first_four, last_five)
       url += filename
-      
-      print(url)
-      
+
       # Query the server
       r = urllib.request.Request(url)
       handler = urllib.request.urlopen(r)
