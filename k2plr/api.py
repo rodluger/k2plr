@@ -439,13 +439,14 @@ class API(object):
         scstars = [star['ktc_k2_id'] for star in scstars + scnulls]
 
         # Sort them into campaigns
-        c = [[] for i in range(99)]
+        c = [[] for i in range(18)]
         for star in stars:
-          c[star["sci_campaign"]].append([star["ktc_k2_id"], star["kp"], star["sci_channel"], star["ktc_k2_id"] in scstars])
+          camp = star["sci_campaign"]
+          c[camp].append([star["ktc_k2_id"], star["kp"], star["sci_channel"], star["ktc_k2_id"] in scstars])
         
         # Create a dict
         res = {}
-        for campaign in range(99):
+        for campaign in range(18):
           if len(c[campaign]):
             res.update({campaign: c[campaign]})
 
