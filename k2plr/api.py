@@ -1438,8 +1438,13 @@ def EVEREST(EPIC, version = 1, clobber = False, sci_campaign = None):
     res._file = os.path.join(base_dir, filename)
     with pyfits.open(os.path.join(base_dir, filename)) as f:  
         res.time = f[1].data['TIME']
-        
-        # Get the data
         res.flux = f[1].data['FLUX']
+        if version == 1:
+          res.mask = np.where(f[1].data['OUTLIER'])
+          if f[1].header['BRKPT1'] is not None:
+            bt = f[1].header['BRKPT1']
+            res.breakpoints = [np.argmax(res.time > bt) - 1, len(res.time) - 1]
+          else:
+            res.breakpoints = [len(res.time) - 1]
         
     return res
