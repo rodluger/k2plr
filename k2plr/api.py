@@ -84,6 +84,17 @@ else:
 from .config import KPLR_ROOT
 from . import mast
 
+def Interpolate(time, mask, y):
+    '''
+  
+    '''
+  
+    t_ = np.delete(time, mask)
+    y_ = np.delete(y, mask, axis = 0)
+    y[mask] = np.interp(time[mask], t_, y_)
+  
+    return y
+
 class API(object):
     """
     Interface with MAST and Exoplanet Archive APIs.
@@ -1439,12 +1450,18 @@ def EVEREST(EPIC, version = 1, clobber = False, sci_campaign = None):
     with pyfits.open(os.path.join(base_dir, filename)) as f:  
         res.time = f[1].data['TIME']
         res.flux = f[1].data['FLUX']
+        
+        # Special hacks for v1
         if version == 1:
-          res.mask = np.where(f[1].data['OUTLIER'])
-          if f[1].header['BRKPT1'] is not None:
-            bt = f[1].header['BRKPT1']
-            res.breakpoints = [np.argmax(res.time > bt) - 1, len(res.time) - 1]
-          else:
-            res.breakpoints = [len(res.time) - 1]
+          
+            # Interpolate over NaNs
+            res.time = Interpolate(np.arange(0, len(res.time)), np.where(np.isnan(res.time)), res.time)
+            
+            res.mask = np.where(f[1].data['OUTLIER'])
+            if f[1].header['BRKPT1'] is not None:
+                bt = f[1].header['BRKPT1']
+                res.breakpoints = [np.argmax(res.time > bt) - 1, len(res.time) - 1]
+            else:
+                res.breakpoints = [len(res.time) - 1]
         
     return res
