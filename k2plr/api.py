@@ -23,6 +23,7 @@ from itertools import product
 from functools import partial
 from tempfile import NamedTemporaryFile
 import random
+import re
 
 import six
 from six.moves import urllib
@@ -1374,6 +1375,18 @@ def K2SC(EPIC, version = 1, clobber = False, sci_campaign = None):
         res.pdcflux = f[1].data['FLUX'] + f[1].data['TREND_T'] - np.median(f[1].data['TREND_T'])
         res.sapflux = f[2].data['FLUX'] + f[2].data['TREND_T'] - np.median(f[2].data['TREND_T'])
         
+        # Get bad data point mask
+        nanmask = np.where(np.isnan(res.pdcflux) | (res.pdcflux == 0))[0]                      
+        badmask = []
+        for b in [1,2,3,4,5,6,7,8,9,11,12,13,14,16,17]:
+          badmask += list(np.where(f[1].data['QUALITY'] & 2 ** (b - 1))[0])
+        res.mask = np.array(list(set(np.concatenate([nanmask, badmask]))), dtype = int)
+        
+        # Get breakpoints
+        split_times = [float(s) for s in re.findall(r"\d+\.\d?", f[1].header['SPLITS'])]
+        split_inds = [np.argmax(res.time > s) - 1 for s in split_times]
+        res.breakpoints = split_inds + [len(res.time) - 1]
+
     return res
 
 class everest(object): 
@@ -1457,9 +1470,12 @@ def EVEREST(EPIC, version = 1, clobber = False, sci_campaign = None):
             # Interpolate over NaNs
             res.time = Interpolate(np.arange(0, len(res.time)), np.where(np.isnan(res.time)), res.time)
             
+            # Get outliers
             res.mask = np.where(f[1].data['OUTLIER'])
-            if f[1].header['BRKPT1'] is not None:
-                bt = f[1].header['BRKPT1']
+            
+            # Get breakpoint indices
+            if f[1].header['BRKPT1'] != '':
+                bt = float(f[1].header['BRKPT1'])
                 res.breakpoints = [np.argmax(res.time > bt) - 1, len(res.time) - 1]
             else:
                 res.breakpoints = [len(res.time) - 1]
