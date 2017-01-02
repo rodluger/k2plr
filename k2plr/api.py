@@ -1392,7 +1392,7 @@ def K2SC(EPIC, version = 1, clobber = False, sci_campaign = None):
 class everest(object): 
     pass
 
-def EVEREST(EPIC, version = 1, clobber = False, sci_campaign = None):
+def EVEREST(EPIC, version = 1, clobber = False, sci_campaign = None, raw = False):
     '''
     
     '''
@@ -1462,7 +1462,14 @@ def EVEREST(EPIC, version = 1, clobber = False, sci_campaign = None):
     res._file = os.path.join(base_dir, filename)
     with pyfits.open(os.path.join(base_dir, filename)) as f:  
         res.time = f[1].data['TIME']
-        res.flux = f[1].data['FLUX']
+        
+        if not raw:
+            res.flux = f[1].data['FLUX']
+        else:
+            if version == 1:
+                res.flux = f[1].data['RAW_FLUX']
+            else:
+                res.flux = f[1].data['FRAW']
         
         # Special hacks for v1
         if version == 1:
