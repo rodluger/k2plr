@@ -24,6 +24,12 @@ else:
 builtins.__KPLR_SETUP__ = True
 import k2plr
 
+long_description = \
+"""
+A fork of the `kplr` package with custom `K2` functionality.
+Enables access to the `K2` raw and de-trended light curves.
+"""
+
 setup(
     name="k2plr",
     version=k2plr.__version__,
@@ -32,8 +38,8 @@ setup(
     packages=["k2plr"],
     url="https://github.com/rodluger/k2plr",
     license="MIT",
-    description="Tools for working with Kepler data in Python",
-    long_description=open("README.rst").read(),
+    description="Tools for working with Kepler and K2 data in Python",
+    long_description=long_description,
     install_requires=["six"],
     classifiers=[
         # "Development Status :: 5 - Production/Stable",
