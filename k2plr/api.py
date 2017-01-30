@@ -451,13 +451,15 @@ class API(object):
                                     mission="k2", **params)
         scstars = [star['ktc_k2_id'] for star in scstars + scnulls]
 
-        # Sort them into campaigns
-        c = [[] for i in K2_CAMPAIGNS]
+        # Sort them into a campaigns dict
+        c = {}
+        for campaign in K2_CAMPAIGNS:
+          c.update({campaign: []})
         for star in stars:
           camp = star["sci_campaign"]
           c[camp].append([star["ktc_k2_id"], star["kp"], star["sci_channel"], star["ktc_k2_id"] in scstars])
         
-        # Create a dict
+        # Remove empty campaigns
         res = {}
         for campaign in K2_CAMPAIGNS:
           if len(c[campaign]):
