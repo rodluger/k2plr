@@ -13,6 +13,7 @@ from __future__ import (division, print_function, absolute_import,
                         unicode_literals)
 
 __all__ = ["API", "KOI", "Planet", "Star", "LightCurve", "TargetPixelFile"]
+K2_CAMPAIGNS = [0,1,2,3,4,5,6,7,8,9,91,92,10,101,102,11,12,13,14,15,16,17]
 
 import os
 import re
@@ -403,13 +404,13 @@ class API(object):
         random.shuffle(stars)
         
         # Sort them into campaigns
-        c = [[] for i in range(99)]
+        c = [[] for i in K2_CAMPAIGNS]
         for star in stars:
           c[star["sci_campaign"]].append(star["ktc_k2_id"])
         
         # Create a dict
         res = {}
-        for campaign in range(99):
+        for campaign in K2_CAMPAIGNS:
           if len(c[campaign]):
             res.update({campaign: c[campaign]})
 
@@ -451,14 +452,14 @@ class API(object):
         scstars = [star['ktc_k2_id'] for star in scstars + scnulls]
 
         # Sort them into campaigns
-        c = [[] for i in range(18)]
+        c = [[] for i in K2_CAMPAIGNS]
         for star in stars:
           camp = star["sci_campaign"]
           c[camp].append([star["ktc_k2_id"], star["kp"], star["sci_channel"], star["ktc_k2_id"] in scstars])
         
         # Create a dict
         res = {}
-        for campaign in range(18):
+        for campaign in K2_CAMPAIGNS:
           if len(c[campaign]):
             res.update({campaign: c[campaign]})
 
@@ -1156,7 +1157,7 @@ def K2SFF(EPIC, version = 1, clobber = False, sci_campaign = None):
     # Check for local copies
     file_exists = False
     if sci_campaign is None:
-        for c in [0,1,2,3,4,5,6,7,8,91,92,101,102,11,12,13,14,15,16,17]:
+        for c in K2_CAMPAIGNS:
             filename = "hlsp_k2sff_k2_lightcurve_%09d-c%02d_kepler_v%d_llc.fits" % \
                        (EPIC, c, version)
             if os.path.exists(os.path.join(base_dir, filename)):
@@ -1234,7 +1235,7 @@ def K2VARCAT(EPIC, version = 2, clobber = False, sci_campaign = None):
     # Check for local copies
     file_exists = False
     if sci_campaign is None:
-        for c in [0,1,2,3,4,5,6,7,8,91,92,101,102,11,12,13,14,15,16,17]:
+        for c in K2_CAMPAIGNS:
             filename = "hlsp_k2varcat_k2_lightcurve_%09d-c%02d_kepler_v%d_llc.fits" % \
                        (EPIC, c, version)
             if os.path.exists(os.path.join(base_dir, filename)):
@@ -1311,7 +1312,7 @@ def K2SC(EPIC, version = 1, clobber = False, sci_campaign = None):
     # Check for local copies
     file_exists = False
     if sci_campaign is None:
-        for c in [0,1,2,3,4,5,6,7,8,91,92,101,102,11,12,13,14,15,16,17]:
+        for c in K2_CAMPAIGNS:
             filename = "hlsp_k2sc_k2_llc_%09d-c%02d_kepler_v%d_lc.fits" % \
                        (EPIC, c, version)
             if os.path.exists(os.path.join(base_dir, filename)):
@@ -1378,7 +1379,7 @@ def K2SC(EPIC, version = 1, clobber = False, sci_campaign = None):
         # Get bad data point mask
         nanmask = np.where(np.isnan(res.pdcflux) | (res.pdcflux == 0))[0]                      
         badmask = []
-        for b in [1,2,3,4,5,6,7,8,9,11,12,13,14,16,17]:
+        for b in K2_CAMPAIGNS:
           badmask += list(np.where(f[1].data['QUALITY'] & 2 ** (b - 1))[0])
         res.mask = np.array(list(set(np.concatenate([nanmask, badmask]))), dtype = int)
         
