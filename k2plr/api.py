@@ -1156,7 +1156,7 @@ def K2SFF(EPIC, version = 1, clobber = False, sci_campaign = None):
     # Check for local copies
     file_exists = False
     if sci_campaign is None:
-        for c in range(30):
+        for c in [0,1,2,3,4,5,6,7,8,91,92,101,102,11,12,13,14,15,16,17]:
             filename = "hlsp_k2sff_k2_lightcurve_%09d-c%02d_kepler_v%d_llc.fits" % \
                        (EPIC, c, version)
             if os.path.exists(os.path.join(base_dir, filename)):
@@ -1234,7 +1234,7 @@ def K2VARCAT(EPIC, version = 2, clobber = False, sci_campaign = None):
     # Check for local copies
     file_exists = False
     if sci_campaign is None:
-        for c in range(30):
+        for c in [0,1,2,3,4,5,6,7,8,91,92,101,102,11,12,13,14,15,16,17]:
             filename = "hlsp_k2varcat_k2_lightcurve_%09d-c%02d_kepler_v%d_llc.fits" % \
                        (EPIC, c, version)
             if os.path.exists(os.path.join(base_dir, filename)):
@@ -1311,7 +1311,7 @@ def K2SC(EPIC, version = 1, clobber = False, sci_campaign = None):
     # Check for local copies
     file_exists = False
     if sci_campaign is None:
-        for c in range(30):
+        for c in [0,1,2,3,4,5,6,7,8,91,92,101,102,11,12,13,14,15,16,17]:
             filename = "hlsp_k2sc_k2_llc_%09d-c%02d_kepler_v%d_lc.fits" % \
                        (EPIC, c, version)
             if os.path.exists(os.path.join(base_dir, filename)):
@@ -1403,7 +1403,7 @@ def EVEREST(EPIC, version = 1, clobber = False, sci_campaign = None, raw = False
     # Check for local copies
     file_exists = False
     if sci_campaign is None:
-        for c in range(30):
+        for c in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]:
             filename = "hlsp_everest_k2_llc_%09d-c%02d_kepler_v%.1f_lc.fits" % \
                        (EPIC, c, version)
             if os.path.exists(os.path.join(base_dir, filename)):
