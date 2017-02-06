@@ -1434,7 +1434,7 @@ def EVEREST(EPIC, version = 1, clobber = False, sci_campaign = None, raw = False
       # Get the url
       first_four = int(str(EPIC)[:4])
       last_five = int(str(EPIC)[-5:])
-      url = "https://archive.stsci.edu/missions/hlsp/everest/"
+      url = "https://archive.stsci.edu/missions/hlsp/everest/v%d/" % version
       url += "c%02d/%04d00000/%05d/" % (sci_campaign, first_four, last_five)
       url += filename
 
