@@ -1381,7 +1381,7 @@ def K2SC(EPIC, version = 1, clobber = False, sci_campaign = None):
         # Get bad data point mask
         nanmask = np.where(np.isnan(res.pdcflux) | (res.pdcflux == 0))[0]                      
         badmask = []
-        for b in for b in [1,2,3,4,5,6,7,8,9,11,12,13,14,16,17]::
+        for b in [1,2,3,4,5,6,7,8,9,11,12,13,14,16,17]:
           badmask += list(np.where(f[1].data['QUALITY'] & 2 ** (b - 1))[0])
         res.mask = np.array(list(set(np.concatenate([nanmask, badmask]))), dtype = int)
         
@@ -1395,7 +1395,7 @@ def K2SC(EPIC, version = 1, clobber = False, sci_campaign = None):
 class everest(object): 
     pass
 
-def EVEREST(EPIC, version = 1, clobber = False, sci_campaign = None, raw = False):
+def EVEREST(EPIC, version = 2, clobber = False, sci_campaign = None, raw = False):
     '''
     
     '''
