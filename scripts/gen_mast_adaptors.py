@@ -12,7 +12,7 @@ url = "http://archive.stsci.edu/search_fields.php"
 types = {"string": "unicode", "datetime": "unicode", "float": "float",
          "integer": "int", "numeric": "unicode", "ra": "float",
          "dec": "float", "real": "float", "double": "float",
-         "ustring": "unicode"}
+         "ustring": "unicode", "substring": "unicode"}
 
 
 def gen_adaptor(mission):
@@ -28,7 +28,7 @@ def gen_adaptor(mission):
     assert table_body is not None
 
     for row in table_body[0].find_all("tr"):
-        short_name, long_name, desc, ex, t = row.find_all("td")
+        short_name, long_name, desc, ex, t, _ = row.find_all("td")
         print("\"{0}\": (\"{1}\", {2}),".format(long_name.text.strip(),
                                                 short_name.text.strip(),
                                                 types[t.text.strip()]))

@@ -492,6 +492,7 @@ k2_dataset_adapter = Adapter({
     "Channel": ("sci_channel", int),
     "Nearest Neighbor": ("prox", float),
     "Nomad ID": ("nomad", six.text_type),
+    "High-Level Science Products": ("k2_hlsp", int),
 })
 
 mini_epic_adapter = Adapter({
