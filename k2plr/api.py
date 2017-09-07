@@ -13,7 +13,7 @@ from __future__ import (division, print_function, absolute_import,
                         unicode_literals)
 
 __all__ = ["API", "KOI", "Planet", "Star", "LightCurve", "TargetPixelFile"]
-K2_CAMPAIGNS = [0,1,2,3,4,5,6,7,8,9,91,92,10,101,102,11,12,13,14,15,16,17]
+K2_CAMPAIGNS = [0,1,2,3,4,5,6,7,8,9,91,92,10,101,102,11,111,112,12,13,14,15,16,17]
 
 import os
 import re
