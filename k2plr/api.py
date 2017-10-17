@@ -1459,7 +1459,7 @@ def EVEREST(EPIC, version = 2, clobber = False, sci_campaign = None, raw = False
     # Check for local copies
     file_exists = False
     if sci_campaign is None:
-        for c in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]:
+        for c in K2_CAMPAIGNS:
             filename = "hlsp_everest_k2_llc_%09d-c%02d_kepler_v%.1f_lc.fits" % \
                        (EPIC, c, version)
             if os.path.exists(os.path.join(base_dir, filename)):
