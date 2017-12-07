@@ -88,13 +88,13 @@ from . import mast
 
 def Interpolate(time, mask, y):
     '''
-  
+
     '''
-  
+
     t_ = np.delete(time, mask)
     y_ = np.delete(y, mask, axis = 0)
     y[mask] = np.interp(time[mask], t_, y_)
-  
+
     return y
 
 class API(object):
@@ -191,7 +191,7 @@ class API(object):
         params["coordformat"] = "dec"
         if params.get("selectedColumnsCsv", None) is not None:
           params["verb"] = 3
-        
+
         # Deal with sort order.
         if sort is not None:
             if isinstance(sort, six.string_types):
@@ -347,7 +347,7 @@ class API(object):
             raise ValueError("No KIC target found with id: '{0}'"
                              .format(kepid))
         return stars[0]
-    
+
     def target(self, kepid, **params):
         """
         Get a potential KIC target (not necessarily observed by ths mission) by id from MAST.
@@ -361,7 +361,7 @@ class API(object):
             raise ValueError("No KIC target found with id: '{0}'"
                              .format(kepid))
         return stars[0]
-    
+
     def targets(self, **params):
         """
         Get a list of KIC targets from MAST. Only return up to 100 results by
@@ -382,7 +382,7 @@ class API(object):
         """
         Return a list of all the KIC target IDs for which data was collected
         in a given quarter.
-        
+
         """
 
         params["selectedColumnsCsv"] = "ktc_kepler_id"
@@ -393,7 +393,7 @@ class API(object):
         stars = self.mast_request("data_search", adapter=mast.mini_kic_adapter,
                                   mission="kepler", **params)
         return [star["ktc_kepler_id"] for star in stars]
-        
+
     def k2_stars(self, **params):
         """
         Get a list of EPIC targets from MAST. Only return up to 100 results by
@@ -413,9 +413,9 @@ class API(object):
         Return a dict of all the EPIC target IDs
         for which LC or SC data was collected, indexed by campaign,
         and randomly shuffled.
-        
+
         Returns objects that are listed as either "star" or "\\null".
-        
+
         """
 
         params["selectedColumnsCsv"] = "ktc_k2_id,sci_campaign"
@@ -432,12 +432,12 @@ class API(object):
                                   mission="k2", **params)
         stars = stars + nulls
         random.shuffle(stars)
-        
+
         # Sort them into campaigns
         c = [[] for i in K2_CAMPAIGNS]
         for star in stars:
           c[star["sci_campaign"]].append(star["ktc_k2_id"])
-        
+
         # Create a dict
         res = {}
         for campaign in K2_CAMPAIGNS:
@@ -451,11 +451,11 @@ class API(object):
         Return a dict of all the EPIC target IDs, kepmags, and channel numbers
         for which LC/SC data was collected, indexed by campaign,
         and randomly shuffled.
-        
+
         Returns objects that are listed as either "star" or "\\null".
-        
+
         """
-        
+
         # Get all the long cadence targets
         params["selectedColumnsCsv"] = "ktc_k2_id,sci_campaign,kp,sci_channel"
         params["ktc_target_type"] = "LC"
@@ -488,7 +488,7 @@ class API(object):
         for star in stars:
           camp = star["sci_campaign"]
           c[camp].append([star["ktc_k2_id"], star["kp"], star["sci_channel"], star["ktc_k2_id"] in scstars])
-        
+
         # Remove empty campaigns
         res = {}
         for campaign in K2_CAMPAIGNS:
@@ -499,9 +499,9 @@ class API(object):
 
     def k2_star_mags(self, stars_per_mag = 50, mags = range(8,18), **params):
         """
-        Returns the EPIC numbers of ``stars_per_mag`` random stars in each 
+        Returns the EPIC numbers of ``stars_per_mag`` random stars in each
         Kepler magnitude bin in the range ``mags``.
-        
+
         """
         params["selectedColumnsCsv"] = "id"
         params["ordercolumn1"] = "id"
@@ -823,7 +823,7 @@ class Target(Model):
             self._kois = self.api.kois(where="kepid like '{0}'"
                                        .format(self.kepid))
         return self._kois
-    
+
 class K2Star(Model):
     """
     A star from the `K2 EPIC Catalog (EPIC)
@@ -1198,17 +1198,17 @@ class K2TargetPixelFile(TargetPixelFile):
                                int(int(int(self.kepid[-5:][-5:])*1e-3)*1e3),
                                self._filename)
 
-class k2sff(object): 
+class k2sff(object):
     pass
 
 def K2SFF(EPIC, version = 1, clobber = False, sci_campaign = None):
     '''
-    
+
     '''
-    
-    # Local directory 
+
+    # Local directory
     base_dir = os.path.join(KPLR_ROOT, "data", "k2sff", str(EPIC))
-    
+
     # Check for local copies
     file_exists = False
     if sci_campaign is None:
@@ -1224,10 +1224,10 @@ def K2SFF(EPIC, version = 1, clobber = False, sci_campaign = None):
                    (EPIC, sci_campaign, version)
         if os.path.exists(os.path.join(base_dir, filename)):
             file_exists = True
-    
+
     # Download the data
     if clobber or not file_exists:
-      
+
       # Get the campaign number
       if sci_campaign is None:
         client = API()
@@ -1236,11 +1236,11 @@ def K2SFF(EPIC, version = 1, clobber = False, sci_campaign = None):
         sci_campaign = tpf[0].sci_campaign
         filename = "hlsp_k2sff_k2_lightcurve_%09d-c%02d_kepler_v%d_llc.fits" % \
                    (EPIC, sci_campaign, version)
-      
+
       # Get the url
       first_four = int(str(EPIC)[:4])
       last_five = int(str(EPIC)[-5:])
-      url = "http://archive.stsci.edu/missions/hlsp/k2sff/"
+      url = "http://archive.stsci.edu/hlsps/k2sff/"
       url += "c%02d/%04d00000/%05d/" % (sci_campaign, first_four, last_five)
       url += filename
 
@@ -1251,7 +1251,7 @@ def K2SFF(EPIC, version = 1, clobber = False, sci_campaign = None):
       if int(code) != 200:
           raise APIError(code, url, "")
       data = handler.read()
-      
+
       # Make sure that the root directory exists.
       try:
           os.makedirs(base_dir)
@@ -1265,28 +1265,28 @@ def K2SFF(EPIC, version = 1, clobber = False, sci_campaign = None):
       os.fsync(f.fileno())
       f.close()
       shutil.move(f.name, os.path.join(base_dir, filename))
-  
-    # Now open the fits file 
-    res = k2sff() 
+
+    # Now open the fits file
+    res = k2sff()
     res._file = os.path.join(base_dir, filename)
-    with pyfits.open(os.path.join(base_dir, filename)) as f:  
+    with pyfits.open(os.path.join(base_dir, filename)) as f:
         res.time = f[1].data['T']
         res.fcor = f[1].data['FCOR']
         res.apertures = np.array(np.vstack([f[22].data, f[23].data]), dtype = int)
-    
+
     return res
 
-class k2varcat(object): 
+class k2varcat(object):
     pass
 
 def K2VARCAT(EPIC, version = 2, clobber = False, sci_campaign = None):
     '''
-    
+
     '''
-    
-    # Local directory 
+
+    # Local directory
     base_dir = os.path.join(KPLR_ROOT, "data", "k2varcat", str(EPIC))
-    
+
     # Check for local copies
     file_exists = False
     if sci_campaign is None:
@@ -1302,10 +1302,10 @@ def K2VARCAT(EPIC, version = 2, clobber = False, sci_campaign = None):
                    (EPIC, sci_campaign, version)
         if os.path.exists(os.path.join(base_dir, filename)):
             file_exists = True
-    
+
     # Download the data
     if clobber or not file_exists:
-      
+
       # Get the campaign number
       if sci_campaign is None:
         client = API()
@@ -1314,11 +1314,11 @@ def K2VARCAT(EPIC, version = 2, clobber = False, sci_campaign = None):
         sci_campaign = tpf[0].sci_campaign
         filename = "hlsp_k2varcat_k2_lightcurve_%09d-c%02d_kepler_v%d_llc.fits" % \
                    (EPIC, sci_campaign, version)
-      
+
       # Get the url
       first_four = int(str(EPIC)[:4])
       next_two = int(str(EPIC)[-5:-3] + '000')
-      url = "https://archive.stsci.edu/missions/hlsp/k2varcat/"
+      url = "https://archive.stsci.edu/hlsps/k2varcat/"
       url += "c%02d/%04d00000/%05d/" % (sci_campaign, first_four, next_two)
       url += filename
 
@@ -1329,7 +1329,7 @@ def K2VARCAT(EPIC, version = 2, clobber = False, sci_campaign = None):
       if int(code) != 200:
           raise APIError(code, url, "")
       data = handler.read()
-      
+
       # Make sure that the root directory exists.
       try:
           os.makedirs(base_dir)
@@ -1343,27 +1343,27 @@ def K2VARCAT(EPIC, version = 2, clobber = False, sci_campaign = None):
       os.fsync(f.fileno())
       f.close()
       shutil.move(f.name, os.path.join(base_dir, filename))
-  
-    # Now open the fits file 
-    res = k2varcat() 
+
+    # Now open the fits file
+    res = k2varcat()
     res._file = os.path.join(base_dir, filename)
-    with pyfits.open(os.path.join(base_dir, filename)) as f:  
+    with pyfits.open(os.path.join(base_dir, filename)) as f:
         res.time = f[1].data['TIME']
         res.flux = f[1].data['DETFLUX']
-    
+
     return res
 
-class k2sc(object): 
+class k2sc(object):
     pass
 
-def K2SC(EPIC, version = 1, clobber = False, sci_campaign = None):
+def K2SC(EPIC, version = 2, clobber = False, sci_campaign = None):
     '''
-    
+
     '''
-    
-    # Local directory 
+
+    # Local directory
     base_dir = os.path.join(KPLR_ROOT, "data", "k2sc", str(EPIC))
-    
+
     # Check for local copies
     file_exists = False
     if sci_campaign is None:
@@ -1379,10 +1379,10 @@ def K2SC(EPIC, version = 1, clobber = False, sci_campaign = None):
                    (EPIC, sci_campaign, version)
         if os.path.exists(os.path.join(base_dir, filename)):
             file_exists = True
-    
+
     # Download the data
     if clobber or not file_exists:
-      
+
       # Get the campaign number
       if sci_campaign is None:
         client = API()
@@ -1391,11 +1391,14 @@ def K2SC(EPIC, version = 1, clobber = False, sci_campaign = None):
         sci_campaign = tpf[0].sci_campaign
         filename = "hlsp_k2sc_k2_llc_%09d-c%02d_kepler_v%d_lc.fits" % \
                    (EPIC, sci_campaign, version)
-      
+
       # Get the url
       first_four = int(str(EPIC)[:4])
       next_two = int(str(EPIC)[-5:-3] + '000')
-      url = "https://archive.stsci.edu/missions/hlsp/k2sc/"
+      if version == 1:
+          url = "https://archive.stsci.edu/missions/hlsp/k2sc/"
+      else:
+          url = "https://archive.stsci.edu/hlsps/k2sc/v%d/" % version
       url += "c%02d/%04d00000/" % (sci_campaign, first_four)
       url += filename
 
@@ -1406,7 +1409,7 @@ def K2SC(EPIC, version = 1, clobber = False, sci_campaign = None):
       if int(code) != 200:
           raise APIError(code, url, "")
       data = handler.read()
-      
+
       # Make sure that the root directory exists.
       try:
           os.makedirs(base_dir)
@@ -1420,24 +1423,26 @@ def K2SC(EPIC, version = 1, clobber = False, sci_campaign = None):
       os.fsync(f.fileno())
       f.close()
       shutil.move(f.name, os.path.join(base_dir, filename))
-  
-    # Now open the fits file 
-    res = k2sc() 
+
+    # Now open the fits file
+    res = k2sc()
     res._file = os.path.join(base_dir, filename)
-    with pyfits.open(os.path.join(base_dir, filename)) as f:  
+    with pyfits.open(os.path.join(base_dir, filename)) as f:
         res.time = f[1].data['TIME']
-        
         # Get the data minus the instrumental trends only
-        res.pdcflux = f[1].data['FLUX'] + f[1].data['TREND_T'] - np.median(f[1].data['TREND_T'])
-        res.sapflux = f[2].data['FLUX'] + f[2].data['TREND_T'] - np.median(f[2].data['TREND_T'])
-        
+        if version == 1:
+            res.pdcflux = f[1].data['FLUX'] + f[1].data['TREND_T'] - np.median(f[1].data['TREND_T'])
+            res.sapflux = f[2].data['FLUX'] + f[2].data['TREND_T'] - np.median(f[2].data['TREND_T'])
+        else:
+            res.pdcflux = f[1].data['FLUX'] + f[1].data['TRTIME'] - np.median(f[1].data['TRTIME'])
+            res.sapflux = f[2].data['FLUX'] + f[2].data['TRTIME'] - np.median(f[2].data['TRTIME'])
         # Get bad data point mask
-        nanmask = np.where(np.isnan(res.pdcflux) | (res.pdcflux == 0))[0]                      
+        nanmask = np.where(np.isnan(res.pdcflux) | (res.pdcflux == 0))[0]
         badmask = []
         for b in [1,2,3,4,5,6,7,8,9,11,12,13,14,16,17]:
           badmask += list(np.where(f[1].data['QUALITY'] & 2 ** (b - 1))[0])
         res.mask = np.array(list(set(np.concatenate([nanmask, badmask]))), dtype = int)
-        
+
         # Get breakpoints
         split_times = [float(s) for s in re.findall(r"\d+\.\d?", f[1].header['SPLITS'])]
         split_inds = [np.argmax(res.time > s) - 1 for s in split_times]
@@ -1445,17 +1450,17 @@ def K2SC(EPIC, version = 1, clobber = False, sci_campaign = None):
 
     return res
 
-class everest(object): 
+class everest(object):
     pass
 
 def EVEREST(EPIC, version = 2, clobber = False, sci_campaign = None, raw = False):
     '''
-    
+
     '''
-    
-    # Local directory 
+
+    # Local directory
     base_dir = os.path.join(KPLR_ROOT, "data", "everest", str(EPIC))
-    
+
     # Check for local copies
     file_exists = False
     if sci_campaign is None:
@@ -1471,10 +1476,10 @@ def EVEREST(EPIC, version = 2, clobber = False, sci_campaign = None, raw = False
                    (EPIC, sci_campaign, version)
         if os.path.exists(os.path.join(base_dir, filename)):
             file_exists = True
-    
+
     # Download the data
     if clobber or not file_exists:
-      
+
       # Get the campaign number
       if sci_campaign is None:
         client = API()
@@ -1483,11 +1488,14 @@ def EVEREST(EPIC, version = 2, clobber = False, sci_campaign = None, raw = False
         sci_campaign = tpf[0].sci_campaign
         filename = "hlsp_everest_k2_llc_%09d-c%02d_kepler_v%.1f_lc.fits" % \
                    (EPIC, sci_campaign, version)
-      
+
       # Get the url
       first_four = int(str(EPIC)[:4])
       last_five = int(str(EPIC)[-5:])
-      url = "https://archive.stsci.edu/missions/hlsp/everest/v%d/" % version
+      if version == 1:
+          url = "https://archive.stsci.edu/missions/hlsp/everest/v1/"
+      else:
+          url = "https://archive.stsci.edu/hlsps/everest/v%d/" % version
       url += "c%02d/%04d00000/%05d/" % (sci_campaign, first_four, last_five)
       url += filename
 
@@ -1498,7 +1506,7 @@ def EVEREST(EPIC, version = 2, clobber = False, sci_campaign = None, raw = False
       if int(code) != 200:
           raise APIError(code, url, "")
       data = handler.read()
-      
+
       # Make sure that the root directory exists.
       try:
           os.makedirs(base_dir)
@@ -1512,13 +1520,13 @@ def EVEREST(EPIC, version = 2, clobber = False, sci_campaign = None, raw = False
       os.fsync(f.fileno())
       f.close()
       shutil.move(f.name, os.path.join(base_dir, filename))
-  
-    # Now open the fits file 
-    res = everest() 
+
+    # Now open the fits file
+    res = everest()
     res._file = os.path.join(base_dir, filename)
-    with pyfits.open(os.path.join(base_dir, filename)) as f:  
+    with pyfits.open(os.path.join(base_dir, filename)) as f:
         res.time = f[1].data['TIME']
-        
+
         if not raw:
             res.flux = f[1].data['FLUX']
         else:
@@ -1526,21 +1534,21 @@ def EVEREST(EPIC, version = 2, clobber = False, sci_campaign = None, raw = False
                 res.flux = f[1].data['RAW_FLUX']
             else:
                 res.flux = f[1].data['FRAW']
-        
+
         # Special hacks for v1
         if version == 1:
-          
+
             # Interpolate over NaNs
             res.time = Interpolate(np.arange(0, len(res.time)), np.where(np.isnan(res.time)), res.time)
-            
+
             # Get outliers
             res.mask = np.where(f[1].data['OUTLIER'])
-            
+
             # Get breakpoint indices
             if f[1].header['BRKPT1'] != '':
                 bt = float(f[1].header['BRKPT1'])
                 res.breakpoints = [np.argmax(res.time > bt) - 1, len(res.time) - 1]
             else:
                 res.breakpoints = [len(res.time) - 1]
-        
+
     return res
