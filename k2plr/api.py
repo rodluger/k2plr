@@ -557,7 +557,7 @@ class API(object):
         return data_list
 
     def light_curves(self, kepler_id=None, short_cadence=True, fetch=False,
-                     clobber=False, async=False, **params):
+                     clobber=False, asynch=False, **params):
         """
         Find the set of light curves associated with a KIC target.
 
@@ -576,7 +576,7 @@ class API(object):
             A boolean flag that determines whether or not the data file should
             be overwritten even if it already exists.
 
-        :param async:
+        :param asynch:
             If ``True``, download the files asynchronously using Tornado.
 
         :param params:
@@ -586,14 +586,14 @@ class API(object):
         lcs = [LightCurve(self, d) for d in self._data_search(kepler_id,
                short_cadence=short_cadence, **params)]
         if fetch:
-            if async:
+            if asynch:
                 async_download(lcs, clobber=clobber)
             else:
                 [l.fetch(clobber=clobber) for l in lcs]
         return lcs
 
     def target_pixel_files(self, kepler_id=None, short_cadence=True,
-                           fetch=False, clobber=False, async=False,
+                           fetch=False, clobber=False, asynch=False,
                            cls=None, **params):
         """
         Find the set of target pixel files associated with a KIC target.
@@ -613,7 +613,7 @@ class API(object):
             A boolean flag that determines whether or not the data file should
             be overwritten even if it already exists.
 
-        :param async:
+        :param asynch:
             If ``True``, download the files asynchronously using Tornado.
 
         :param params:
@@ -625,7 +625,7 @@ class API(object):
         tpfs = [cls(self, d) for d in self._data_search(kepler_id,
                 short_cadence=short_cadence, **params)]
         if fetch:
-            if async:
+            if asynch:
                 async_download(tpfs, clobber=clobber)
             else:
                 [l.fetch(clobber=clobber) for l in tpfs]
